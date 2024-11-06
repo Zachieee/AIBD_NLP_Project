@@ -7,13 +7,16 @@ pip install -q -U google-generativeai
 pip install sentence-transformers
 
 # retrieval.py
-sample query: what do people think of apple?
+sample query: what do people think of apple? \
 sample output:
-                                     Original Sentence                                    Lemmatized_text
-27   I'm OVER people bitching about the #iPhone4S.....  [["I'm", 'OVER', 'people', 'bitching', 'about'...
-100  Love my new I0S5 @Apple updates. Just when I t...  [['Love', 'my', 'new', 'I0S5', '@Apple', 'upda...
-26   RT @imightbewrong: I'm OVER people bitching ab...  [['RT', '@imightbewrong:', "I'm", 'OVER', 'peo...
-733  @iancollinsuk @Apple what's incredible, is tha...  [['@iancollinsuk', '@Apple', "what's", 'incred...
-781  @paulbentleymelb @apple I think they call that...  [['@paulbentleymelb', '@apple', 'I', 'think', ...
-701  Is @Apple's voice #tech really as impressive a...  [['Is', "@Apple's", 'voice', '#tech', 'really'...
-290  @Apple unhappy again with service/product qual...  [['@Apple', 'unhappy', 'again', 'with', 'servi...
+
+
+| Index | Original Sentence                                                       | Lemmatized_Text                                                     |
+|-------|-------------------------------------------------------------------------|---------------------------------------------------------------------|
+| 27    | I'm OVER people bitching about the #iPhone4S.....                        | [["I'm", 'OVER', 'people', 'bitching', 'about', 'the', '#iPhone4S']] |
+| 100   | Love my new I0S5 @Apple updates. Just when I thought I'd heard it all... | [['Love', 'my', 'new', 'I0S5', '@Apple', 'updates', 'Just', 'when', 'I', 'thought', 'I'd', 'heard', 'it', 'all']] |
+| 26    | RT @imightbewrong: I'm OVER people bitching about the #iPhone4S.......   | [['RT', '@imightbewrong:', "I'm", 'OVER', 'people', 'bitching', 'about', 'the', '#iPhone4S']] |
+| 733   | @iancollinsuk @Apple what's incredible, is that...                        | [['@iancollinsuk', '@Apple', "what's", 'incredible', 'is', 'that']]  |
+| 781   | @paulbentleymelb @apple I think they call that...                        | [['@paulbentleymelb', '@apple', 'I', 'think', 'they', 'call', 'that']] |
+| 701   | Is @Apple's voice #tech really as impressive as they say?                | [['Is', "@Apple's", 'voice', '#tech', 'really', 'as', 'impressive', 'as', 'they', 'say']] |
+| 290   | @Apple unhappy again with service/product quality....                    | [['@Apple', 'unhappy', 'again', 'with', 'service', 'product', 'quality']] |
