@@ -44,12 +44,15 @@ def compute_similarity(query, query_len, top_n=5):
     # top N tweets
     top_indices = np.argsort(combined_sim)[::-1][:top_n]
     top_tweets = df.iloc[top_indices]
+
+    # Write only the original sentences to file
+    top_tweets[['Original Sentence']].to_csv("top_tweets.csv", index=False)
     
     return top_tweets[['Original Sentence', 'Lemmatized_text']], combined_sim[top_indices]
 
 # test
 query = "what do people think of apple"
 query_len = len(query.split())
-top_tweets, scores = compute_similarity(query, query_len, top_n=7)
+top_tweets, scores = compute_similarity(query, query_len, top_n=100)
 
 print(top_tweets)
