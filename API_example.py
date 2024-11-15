@@ -29,7 +29,7 @@ class LLM_API:
         """
         # Get the top tweets matching the query from TextMatcher
         top_tweets_df = self.matcher.get_top_n(query, top_n)
-        tweets_text = "\n".join(top_tweets_df['Original Sentence'].tolist())
+        tweets_text = "\n".join(top_tweets_df.apply(lambda row: " ".join(map(str, row)), axis=1))
         
         # Construct the prompt for the model
         base_query = (
@@ -57,14 +57,14 @@ if __name__ == "__main__":
     
     # Initialize TextMatcher with the path to your data
     print ("Sentences Embedding...")
-    matcher = TextMatcher(data_path="Data/processed_data.csv")
+    matcher = TextMatcher()
     
     # Initialize and configure the LLM_API
     analyzer = LLM_API(api_key, matcher)
     
     # Define the query
-    query = "what do people think of apple"
+    query = "Breaking news in the US in June 2020"
     
     # Generate the summary using the query
-    response_text = analyzer.generate_summary(query, top_n=100)
+    response_text = analyzer.generate_summary(query, top_n=1000)
     print(response_text)

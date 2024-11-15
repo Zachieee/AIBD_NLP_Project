@@ -65,6 +65,8 @@ class TextMatcher:
         if os.path.exists(EMBEDDINGS_FILE):
             print(f"Loading embeddings from {EMBEDDINGS_FILE}...")
             self.embeddings = torch.load(EMBEDDINGS_FILE, map_location=device, weights_only=True)
+            if isinstance(self.embeddings, list):
+                self.embeddings = torch.stack(self.embeddings).to(device)
         else:
             print("Embeddings file not found, generating embeddings...")
             batch_size = 256
@@ -96,7 +98,7 @@ class TextMatcher:
         query_embedding = query_embedding.cpu().numpy()
 
         # Calculate semantic similarity on the same subset of embeddings
-        semantic_sim = cosine_similarity(query_embedding, self.embeddings[indices]).flatten()
+        semantic_sim = cosine_similarity(query_embedding, self.embeddings[indices].cpu().numpy()).flatten()
 
         # Weighting based on query length
         if query_len <= 5:
