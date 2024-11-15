@@ -13,7 +13,7 @@ def json_to_csv(json_filepath, csv_filepath):
             first_json = json.loads(first_line)
             header = [key for key in first_json.keys() if key != 'link']  # Exclude 'link' from header
 
-            writer = csv.DictWriter(csv_file, fieldnames=header, quoting=csv.QUOTE_ALL)
+            writer = csv.DictWriter(csv_file, fieldnames=header)
             writer.writeheader()  # Write the header row
 
             # Write the first line
