@@ -42,7 +42,7 @@ with gr.Blocks() as demo:
 
     # Initialize the LLM_API
     api_key = "AIzaSyCLFFxeTtwHObbN2HlaCLZo-MxppsszChg"  # Replace with your actual API key
-    matcher = TextMatcher(data_path="Data/processed_data.csv")
+    matcher = TextMatcher()
     analyzer = LLM_API(api_key, matcher)
 
     submit_btn.click(analyzer.generate_summary, inputs=text_input, outputs=text_output)
