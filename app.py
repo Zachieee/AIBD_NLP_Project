@@ -41,9 +41,10 @@ with gr.Blocks() as demo:
     # plot_output = gr.Image(label="Data Visualization")
 
     # Initialize the LLM_API
-    api_key = "AIzaSyCLFFxeTtwHObbN2HlaCLZo-MxppsszChg"  # Replace with your actual API key
+    api_key_Gemini = "AIzaSyCLFFxeTtwHObbN2HlaCLZo-MxppsszChg"  # Replace with your actual API key
+    api_key_OpenAI = "sk-fOm2221aa87eef6a86afa9e29c1af54ddab98e7e637IxpP0"
     matcher = TextMatcher()
-    analyzer = LLM_API(api_key, matcher)
+    analyzer = LLM_API(api_type='openai', api_key=api_key_OpenAI, matcher=matcher)
 
     submit_btn.click(analyzer.generate_summary, inputs=text_input, outputs=text_output)
     # submit_btn.click(generate_plot, inputs=text_input, outputs=plot_output)

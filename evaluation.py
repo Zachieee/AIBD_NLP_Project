@@ -5,12 +5,10 @@ import json
 
 # 初始化API
 api_key = "AIzaSyCLFFxeTtwHObbN2HlaCLZo-MxppsszChg"  # 替换为你的实际API密钥
+api_key_OpenAI = "sk-fOm2221aa87eef6a86afa9e29c1af54ddab98e7e637IxpP0"
 matcher = TextMatcher()
-analyzer = LLM_API(api_key, matcher)
+analyzer = LLM_API("openai", api_key_OpenAI, matcher)
 
-
-matcher = TextMatcher()
-analyzer = LLM_API(api_key, matcher)
 
 # 定义处理和保存反馈的函数
 def save_feedback(accuracy_score, satisfaction_score, content_richness_score, overall_comment):
