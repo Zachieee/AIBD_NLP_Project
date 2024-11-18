@@ -121,7 +121,7 @@ class TextMatcher:
         query_time = dateparser.parse(time_match.group(0)) if time_match else None
         query_text = re.sub(time_regex, "", query).strip()
 
-        # Ensure 'date' is datetime before any operations
+        # datetime
         self.df['date'] = pd.to_datetime(self.df['date'])
 
         print(query_time)
@@ -134,7 +134,7 @@ class TextMatcher:
                 print("No articles found for the specified date.")
                 return pd.DataFrame()
 
-            #  CORRECTED LINE: Pass relevant_df to _compute_similarity
+            # Compute similarity
             top_docs, scores = self._compute_similarity(query_text, top_n=top_n * 2, indices=relevant_indices) 
 
             top_docs['time_diff'] = abs(top_docs['date'] - query_time).dt.days
