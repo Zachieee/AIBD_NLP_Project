@@ -115,7 +115,7 @@ class TextMatcher:
         top_docs = self.df.iloc[indices[top_indices]].copy()  # Retrieve the corresponding documents
         return top_docs, combined_sim[top_indices]
 
-    def get_top_n(self, query, top_n=5):
+    def get_top_n(self, query, top_n=10):
         time_regex = r"\b(\d{4}-\d{2}-\d{2}|\d{1,2}/\d{1,2}/\d{4}|[a-zA-Z]+ \d{1,2}(?:st|nd|rd|th)?, \d{4}|[a-zA-Z]+ \d{4})\b"
         time_match = re.search(time_regex, query)
         query_time = dateparser.parse(time_match.group(0)) if time_match else None
@@ -151,5 +151,5 @@ class TextMatcher:
 if __name__ == "__main__":
    matcher = TextMatcher()
    query = "Breaking news in the US in June 2020"
-   top_docs = matcher.get_top_n(query, top_n=5)
+   top_docs = matcher.get_top_n(query, top_n=10)
    print(top_docs)

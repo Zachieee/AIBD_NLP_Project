@@ -16,7 +16,7 @@ class LLM_API:
         self.matcher = matcher
         self.model = genai.GenerativeModel("gemini-1.5-pro-002")
 
-    def generate_summary(self, query, top_n=5):
+    def generate_summary(self, query, top_n=50):
         """
         Generates a summary based on the user's query and matched tweets.
 
@@ -37,7 +37,7 @@ class LLM_API:
              I need you to do two tasks: \
                 Task 1: Generate a concise answer for the query based on the reference tweets. \
                 Task 2: Organize the information into a clear table where appropriate. \
-             Please always adher to the following guidelines: \
+             Please always adhere to the following guidelines: \
                 1. Summarize or infer information directly from the provided tweets only \
                 2. Keep the summary brief, with a maximum length of 150 words. \
                 3. Use bullet points to enhance readability."
@@ -66,5 +66,5 @@ if __name__ == "__main__":
     query = "Breaking news in the US in June 2020"
     
     # Generate the summary using the query
-    response_text = analyzer.generate_summary(query, top_n=1000)
+    response_text = analyzer.generate_summary(query, top_n=50)
     print(response_text)
