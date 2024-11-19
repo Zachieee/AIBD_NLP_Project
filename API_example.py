@@ -127,7 +127,7 @@ class LLM_API:
         """
         base_query = (
             '''
-            The following context contains a table in markdown format.summary_text
+            The following context contains a table in markdown format.
             Please extract the numbers of each category from the table.
             Return the results as a JSON object with two keys: 'category' and 'number'.
             Ensure the output is strictly in JSON format without any additional text.
@@ -137,6 +137,7 @@ class LLM_API:
             "number": [int1, int2]
             }
             Do not include any additional text or Markdown formatting.
+            If the table does not have a category related column, simply return an empty JSON.
             '''
         )
         full_query = base_query + summary_text
@@ -180,7 +181,7 @@ if __name__ == "__main__":
         )
     
     # Define the query
-    query = "Breaking news in the US in June 2020"
+    query = "Analyze the impact of significant events on arts and culture based on the data in Mar 2017."
     
     # Generate the summary using the query
     try:
