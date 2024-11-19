@@ -1,7 +1,7 @@
 import google.generativeai as genai
 from retrieval import TextMatcher
 import requests
-import os
+import json
 
 class LLM_API:
     # Default system instructions for OpenAI API
@@ -34,11 +34,43 @@ class LLM_API:
             # Initialize OpenAI API parameters
             self.model = "gpt-4o-mini"
             self.instructions = self.DEFAULT_INSTRUCTIONS
-            # Initialize conversation history with system instructions
-            self.conversation = [{"role": "system", "content": self.instructions}]
         else:
             raise ValueError("Unsupported API type. Choose 'gemini' or 'openai'.")
-    
+
+    def call_openai_api(self, prompt):
+        """
+        Calls the OpenAI API with the given prompt and returns the response.
+        
+        Parameters:
+        - prompt (str): The prompt to send to the OpenAI API.
+        
+        Returns:
+        - str: The response from the OpenAI API.
+        """
+        messages = [
+            {"role": "system", "content": self.instructions},
+            {"role": "user", "content": prompt}
+        ]
+        
+        response = requests.post(
+            "https://api.gptsapi.net/v1/chat/completions",
+            headers={
+                "Authorization": f"Bearer {self.api_key}",
+                "Content-Type": "application/json"
+            },
+            json={
+                "model": self.model,
+                "messages": messages,
+                "temperature": 0  # Set temperature to 0 for more deterministic output
+            }
+        )
+        
+        if response.status_code == 200:
+            assistant_reply = response.json()['choices'][0]['message']['content'].strip()
+            return assistant_reply
+        else:
+            raise Exception(f"Request failed with status code {response.status_code}: {response.text}")
+
     def generate_summary(self, query, top_n=5):
         """
         Generates a summary based on the user's query and matched tweets.
@@ -50,9 +82,9 @@ class LLM_API:
         Returns:
         - str: The generated response from the model.
         """
-        # Retrieve the top matching tweets using TextMatcher
-        top_tweets_df = self.matcher.get_top_n(query, top_n)
-        tweets_text = "\n".join(top_tweets_df.apply(lambda row: " ".join(map(str, row)), axis=1))
+        # Retrieve the top matching news using TextMatcher
+        top_news_df = self.matcher.get_top_n(query, top_n)
+        news_text = "\n".join(top_news_df.apply(lambda row: " ".join(map(str, row)), axis=1))
         
         # Construct the prompt for the model
         base_query = (
@@ -68,7 +100,7 @@ class LLM_API:
             '''
         )
         full_query = f"{base_query}\n\nQuery: {query}\n"
-        prompt = f"{full_query}\n\nReference Tweets:\n{tweets_text}"
+        prompt = f"{full_query}\n\nReference Tweets:\n{news_text}"
         
         print("Thinking...\n")
         
@@ -77,41 +109,54 @@ class LLM_API:
             response = self.model.generate_content(prompt)
             return response.text
         elif self.api_type == 'openai':
-            # Append the prompt as a user message in the conversation history
-            self.conversation.append({"role": "user", "content": prompt})
-            
-            # Send the conversation history to the OpenAI API
-            response = requests.post(
-                "https://api.gptsapi.net/v1/chat/completions",
-                headers={
-                    "Authorization": f"Bearer {self.api_key}",
-                    "Content-Type": "application/json"
-                },
-                json={
-                    "model": self.model,
-                    "messages": self.conversation
-                }
-            )
-            
-            # Handle the API response
-            if response.status_code == 200:
-                assistant_reply = response.json()['choices'][0]['message']['content']
-                # Append the assistant's reply to the conversation history
-                self.conversation.append({"role": "assistant", "content": assistant_reply})
-                return assistant_reply
-            else:
-                raise Exception(f"Request failed with status code {response.status_code}: {response.text}")
+            # Use the extracted OpenAI API function
+            response = self.call_openai_api(prompt)
+            return response
         else:
             raise ValueError("Unsupported API type. Choose 'gemini' or 'openai'.")
+        
+    def get_data(self, summary_text):
+        """
+        Extracts numerical data from the provided summary text using the OpenAI API.
+        
+        Parameters:
+        - summary_text (str): The summary text containing a markdown table.
+        
+        Returns:
+        - dict: A dictionary containing 'category' and 'number' extracted from the table.
+        """
+        base_query = (
+            '''
+            The following context contains a table in markdown format.summary_text
+            Please extract the numbers of each category from the table.
+            Return the results as a JSON object with two keys: 'category' and 'number'.
+            Ensure the output is strictly in JSON format without any additional text.
+            Return the result in this exact JSON format:
+            {
+            "category": ["string1", "string2"],
+            "number": [int1, int2]
+            }
+            Do not include any additional text or Markdown formatting.
+            '''
+        )
+        full_query = base_query + summary_text
+        
+        # Use the extracted OpenAI API function
+        response = self.call_openai_api(full_query)
+        
+        # Convert the JSON string to a dictionary
+        try:
+            data = json.loads(response)
+            return data
+        except json.JSONDecodeError:
+            raise Exception(f"Failed to parse JSON from OpenAI response: {response}")
 
-# Usage Example
-if __name__ == "__main__":
+  
+if __name__ == "__main__":    
     # Replace with your actual API key
-    # For Google Gemini API, use your Google API key
-    # For OpenAI API, use your OpenAI API key
     api_key_Gemini = "AIzaSyCLFFxeTtwHObbN2HlaCLZo-MxppsszChg"
     api_key_OpenAI = "sk-fOm2221aa87eef6a86afa9e29c1af54ddab98e7e637IxpP0"
-    
+
     # Initialize TextMatcher with the path to your data
     print("Initializing TextMatcher...")
     matcher = TextMatcher()
@@ -140,7 +185,11 @@ if __name__ == "__main__":
     # Generate the summary using the query
     try:
         response_text = analyzer.generate_summary(query, top_n=1000)
-        print("Generated Summary:\n")
+        print("Generated Summary:")
         print(response_text)
+
+        response_data = analyzer.get_data(response_text)
+        print("Extracted Data:")
+        print(response_data)
     except Exception as e:
         print(f"An error occurred: {e}")
