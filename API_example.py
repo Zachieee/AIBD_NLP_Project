@@ -96,7 +96,7 @@ class LLM_API:
             Guidelines:
                 1. Source of Information: Summarize or infer information exclusively from the provided news data.
                 2. Summary Length: Keep the summary brief, not exceeding 100 words.
-                3. Output Quality: Enhance the readability of the output. The table should keep its original head with md format.
+                3. Output Quality: Enhance the readability of the output. The table should keep its original head with md format. Never drop 'category' column.
             '''
         )
         full_query = f"{base_query}\n\nQuery: {query}\n"
@@ -130,6 +130,7 @@ class LLM_API:
             The following context contains a table in markdown format.
             Please extract the numbers of each category from the table.
             Return the results as a JSON object with two keys: 'category' and 'number'.
+            For same category, you shuold merge them up and count the number.
             Ensure the output is strictly in JSON format without any additional text.
             Return the result in this exact JSON format:
             {
@@ -181,7 +182,7 @@ if __name__ == "__main__":
         )
     
     # Define the query
-    query = "Analyze the impact of significant events on arts and culture based on the data in Mar 2017."
+    query = "How do American judge China?"
     
     # Generate the summary using the query
     try:
