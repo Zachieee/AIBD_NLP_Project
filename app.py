@@ -4,6 +4,7 @@ import plotly.graph_objects as go
 from retrieval import TextMatcher
 from API_example import LLM_API
 
+
 def create_pie_chart(response_data):
     """
     Create a pie chart using the response data.
@@ -32,6 +33,7 @@ def create_pie_chart(response_data):
     )
 
     return fig
+
 
 # Function to handle the query and generate response and table
 def handle_query(query):
@@ -78,7 +80,7 @@ def convert_markdown_to_list_of_lists(markdown_table):
 
 def handle_query_with_visualizations(query):
     concise_answer, table_data, notice, response_data = handle_query(query)
-    
+
     # Prepare table data configuration
     table_data_config = {}
     if table_data:
@@ -91,7 +93,7 @@ def handle_query_with_visualizations(query):
             "scale": 2,
             "column_widths": ["20%"] * len(table_data[0]) if table_data else None,
         }
-    
+
     # Create pie chart
     pie_chart = create_pie_chart(response_data)
 
@@ -107,17 +109,21 @@ with gr.Blocks(theme=gr.themes.Ocean()) as demo:
         submit_btn = gr.Button("Submit")
 
     text_output = gr.Textbox(label="Response")
-    
+
     # First visualization row for table
     with gr.Row():
         table_output = gr.Dataframe(label="Supporting Data Visualization", scale=1)
 
+    # Add a notice component, when there is no available supporting data
+    with gr.Row():
+        notice_output = gr.Textbox(label="Notice", visible=False)
+
+    if table_output is None or "":
+        notice_output.visible=True
+
     # Second visualization row for pie chart
     with gr.Row():
         pie_chart_output = gr.Plot(label="Category Distribution")
-
-    # Add a notice component
-    notice_output = gr.Textbox(label="Notice")
 
     # Initialize the LLM_API (rest of your code remains the same)
     api_key_Gemini = "AIzaSyCLFFxeTtwHObbN2HlaCLZo-MxppsszChg"
@@ -126,7 +132,7 @@ with gr.Blocks(theme=gr.themes.Ocean()) as demo:
     analyzer = LLM_API(api_type='openai', api_key=api_key_OpenAI, matcher=matcher)
 
     submit_btn.click(
-        handle_query_with_visualizations, 
+        handle_query_with_visualizations,
         inputs=text_input,
         outputs=[text_output, table_output, notice_output, pie_chart_output]
     )
