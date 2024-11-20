@@ -1,6 +1,8 @@
 import gradio as gr
 import re
 import plotly.graph_objects as go
+from sqlalchemy.testing.suite.test_reflection import metadata
+
 from retrieval import TextMatcher
 from API_example import LLM_API
 
@@ -82,7 +84,6 @@ def handle_query_with_visualizations(query):
     concise_answer, table_data, notice, response_data = handle_query(query)
 
     # Prepare table data configuration
-    table_data_config = {}
     if table_data:
         table_data_config = {
             "headers": table_data[0],
@@ -93,11 +94,22 @@ def handle_query_with_visualizations(query):
             "scale": 2,
             "column_widths": ["20%"] * len(table_data[0]) if table_data else None,
         }
+    else:
+        table_data_config = {}
+
+    if table_data:
+        notice = gr.Textbox(label="Notice",
+                            placeholder="Words will be more convincing with supporting data, right?",
+                            visible=False)
+    else:
+        notice = gr.Textbox(label="Notice",
+                            value="There is no supporting data available for visualization.",
+                            visible=True)
 
     # Create pie chart
     pie_chart = create_pie_chart(response_data)
 
-    return concise_answer, table_data_config, notice, pie_chart
+    return concise_answer, notice, table_data_config, pie_chart
 
 
 # Initialize Gradio interface
@@ -110,14 +122,14 @@ with gr.Blocks(theme=gr.themes.Ocean()) as demo:
 
     text_output = gr.Textbox(label="Response")
 
-    # First visualization row for table
-    with gr.Row():
-        table_output = gr.Dataframe(label="Supporting Data Visualization", scale=1)
-
     # Add a notice component, only show when there is no available supporting data
     with gr.Row():
         notice_output = gr.Textbox(label="Notice",
                                    placeholder="Words will be more convincing with supporting data, right?")
+
+    # First visualization row for table
+    with gr.Row():
+        table_output = gr.Dataframe(label="Supporting Data Visualization", scale=1, visible=True)
 
     # Second visualization row for pie chart
     with gr.Row():
@@ -132,7 +144,7 @@ with gr.Blocks(theme=gr.themes.Ocean()) as demo:
     submit_btn.click(
         handle_query_with_visualizations,
         inputs=text_input,
-        outputs=[text_output, table_output, notice_output, pie_chart_output]
+        outputs=[text_output, notice_output, table_output, pie_chart_output]
     )
 
 if __name__ == "__main__":
