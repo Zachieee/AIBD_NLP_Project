@@ -114,12 +114,10 @@ with gr.Blocks(theme=gr.themes.Ocean()) as demo:
     with gr.Row():
         table_output = gr.Dataframe(label="Supporting Data Visualization", scale=1)
 
-    # Add a notice component, when there is no available supporting data
+    # Add a notice component, only show when there is no available supporting data
     with gr.Row():
-        notice_output = gr.Textbox(label="Notice", visible=False)
-
-    if table_output is None or "":
-        notice_output.visible=True
+        notice_output = gr.Textbox(label="Notice",
+                                   placeholder="Words will be more convincing with supporting data, right?")
 
     # Second visualization row for pie chart
     with gr.Row():
