@@ -21,7 +21,7 @@ def save_feedback(accuracy_score, satisfaction_score, content_richness_score, ov
     # 将反馈保存到文件
     with open("feedback.json", "a") as f:
         json.dump(feedback, f)
-        f.write("\n")
+        f.write(",\n")
 
 # 定义收集用户反馈的函数
 def collect_feedback(response):
