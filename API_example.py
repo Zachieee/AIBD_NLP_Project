@@ -73,7 +73,7 @@ class LLM_API:
 
     def generate_summary(self, query, top_n=5):
         """
-        Generates a summary based on the user's query and matched tweets.
+        Generates a summary based on the user's query and matched News.
         
         Parameters:
         - query (str): The query string describing what the user wants to know.
@@ -100,7 +100,7 @@ class LLM_API:
             '''
         )
         full_query = f"{base_query}\n\nQuery: {query}\n"
-        prompt = f"{full_query}\n\nReference Tweets:\n{news_text}"
+        prompt = f"{full_query}\n\nReference News:\n{news_text}"
         
         print("Thinking...\n")
         
